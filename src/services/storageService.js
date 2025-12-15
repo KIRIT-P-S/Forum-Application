@@ -6,7 +6,6 @@ const STORAGE_KEYS = {
 };
 
 export const storageService = {
-  // User Management
   getCurrentUser() {
     const user = localStorage.getItem(STORAGE_KEYS.USER);
     return user ? JSON.parse(user) : null;
@@ -20,7 +19,6 @@ export const storageService = {
     localStorage.removeItem(STORAGE_KEYS.USER);
   },
 
-  // Threads
   getThreads() {
     const threads = localStorage.getItem(STORAGE_KEYS.THREADS);
     return threads ? JSON.parse(threads) : null;
@@ -30,7 +28,6 @@ export const storageService = {
     localStorage.setItem(STORAGE_KEYS.THREADS, JSON.stringify(threads));
   },
 
-  // Replies
   getReplies() {
     const replies = localStorage.getItem(STORAGE_KEYS.REPLIES);
     return replies ? JSON.parse(replies) : null;
@@ -40,7 +37,6 @@ export const storageService = {
     localStorage.setItem(STORAGE_KEYS.REPLIES, JSON.stringify(replies));
   },
 
-  // Users
   getUsers() {
     const users = localStorage.getItem(STORAGE_KEYS.USERS);
     return users ? JSON.parse(users) : null;

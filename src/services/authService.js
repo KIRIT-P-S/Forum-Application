@@ -1,61 +1,47 @@
-import { storageService } from './storageService';
-import { mockUsers } from './mockData';
+const API_URL = 'http://localhost:5000/api';
 
 export const authService = {
-  login(email, password) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        let users = storageService.getUsers();
-        if (!users) {
-          users = mockUsers;
-          storageService.setUsers(users);
-        }
-
-        const user = users.find(u => u.email === email && u.password === password);
-        
-        if (user) {
-          const { password: _password, ...userWithoutPassword } = user;
-          resolve({ user: userWithoutPassword, token: 'mock-token-' + user.id });
-        } else {
-          reject(new Error('Invalid email or password'));
-        }
-      }, 500);
+  async login(email, password) {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
     });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Login failed');
+    }
+    
+    const data = await response.json();
+    return { user: data.user, token: data.token };
   },
 
-  signup(userData) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        let users = storageService.getUsers() || mockUsers;
-        
-        if (users.find(u => u.email === userData.email)) {
-          reject(new Error('Email already exists'));
-          return;
-        }
-
-        const newUser = {
-          id: Date.now(),
-          name: userData.name,
-          email: userData.email,
-          password: userData.password,
-          avatar: userData.name.split(' ').map(n => n[0]).join('').toUpperCase()
-        };
-
-        users.push(newUser);
-        storageService.setUsers(users);
-
-        const { password: _, ...userWithoutPassword } = newUser;
-        resolve({ user: userWithoutPassword, token: 'mock-token-' + newUser.id });
-      }, 500);
+  async signup(userData) {
+    const response = await fetch(`${API_URL}/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
     });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Signup failed');
+    }
+    
+    const data = await response.json();
+    return { user: data.user, token: data.token };
   },
 
-  validateToken() {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const user = storageService.getCurrentUser();
-        resolve(user);
-      }, 300);
+  async validateToken(token) {
+    const response = await fetch(`${API_URL}/auth/validate`, {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
+    
+    if (!response.ok) throw new Error('Invalid token');
+    
+    const data = await response.json();
+    return data.user;
   }
 };
+export default authService;

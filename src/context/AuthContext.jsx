@@ -1,68 +1,52 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '../services/authService';
-import { storageService } from '../services/storageService';
+import React, { createContext, useContext, useState } from 'react';
 
-// Create context
 const AuthContext = createContext(null);
 
-// Provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const savedUser = storageService.getCurrentUser();
-      if (savedUser) {
-        setUser(savedUser);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      storageService.clearCurrentUser();
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [loading] = useState(false);
 
   const login = async (email, password) => {
-    const data = await authService.login(email, password);
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
     setUser(data.user);
-    storageService.setCurrentUser(data.user);
+    localStorage.setItem('forum_token', data.token);
+    localStorage.setItem('forum_current_user', JSON.stringify(data.user));
     return data;
   };
 
   const signup = async (userData) => {
-    const data = await authService.signup(userData);
+    const response = await fetch('http://localhost:5000/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    
+    const data = await response.json();
     setUser(data.user);
-    storageService.setCurrentUser(data.user);
+    localStorage.setItem('forum_token', data.token);
+    localStorage.setItem('forum_current_user', JSON.stringify(data.user));
     return data;
   };
 
   const logout = () => {
     setUser(null);
-    storageService.clearCurrentUser();
-  };
-
-  const value = {
-    user,
-    login,
-    signup,
-    logout,
-    loading
+    localStorage.removeItem('forum_token');
+    localStorage.removeItem('forum_current_user');
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook - MUST be exported
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -70,6 +54,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-// Also export the context itself if needed
-export { AuthContext };
