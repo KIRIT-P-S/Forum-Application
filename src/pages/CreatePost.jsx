@@ -27,7 +27,7 @@ const CreatePost = () => {
     setAiLoading(true);
     try {
       const token = localStorage.getItem('forum_token');
-      const response = await fetch('https://forum-application-backend-1.onrender.com/api/ai/suggestions', {
+      const response = await fetch('https://13.60.9.115:5000/api/ai/suggestions', {
 
         method: 'POST',
         headers: {

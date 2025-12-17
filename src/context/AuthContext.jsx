@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [loading] = useState(false);
 
   const login = async (email, password) => {
-    const response = await fetch('https://forum-application-backend-1.onrender.com/api/auth/login', {
+    const response = await fetch('http://13.60.9.115:5000/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (userData) => {
-    const response = await fetch('https://forum-application-backend-1.onrender.com/api/auth/signup', {
+    const response = await fetch('http://13.60.9.115:5000/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData)

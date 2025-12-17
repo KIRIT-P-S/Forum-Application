@@ -1,4 +1,4 @@
-const API_URL = 'https://forum-application-backend-1.onrender.com/api';
+const API_URL = 'https://13.60.9.115:5000/api';
 
 export const authService = {
   async login(email, password) {

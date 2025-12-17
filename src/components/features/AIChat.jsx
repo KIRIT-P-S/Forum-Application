@@ -42,7 +42,7 @@ const AIChat = ({ isOpen, onClose }) => {
         throw new Error('No authentication token found. Please login again.');
       }
 
-      const response = await fetch('http://localhost:5000/api/ai/chat', {
+      const response = await fetch('https://13.60.9.115:5000/api/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
